@@ -3,7 +3,9 @@ package com.example.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,14 +37,26 @@ public class SocialMediaController {
         this.messageService = messageService;
     }
     
-    @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody List<Message> getAllMessage(){
-        return messageService.getAllMessage();
+    @GetMapping
+    public @ResponseBody List<Message> getAllMessages(){
+        return (List<Message>) ResponseEntity.status(200).body(messageService.getAllMessage());
     }
 
     @GetMapping(params = "id")
     public @ResponseBody ResponseEntity<Message> getMessageByID(@RequestParam int id){
         return new ResponseEntity<>(messageService.getMessageByID(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("delete/{id}")
+    public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable int id){
+       if(getMessageByID(id) == null){
+        return  (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.OK);
+       } 
+       else{
+        messageService.deleteMessageById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(1);
+       }
+
     }
 
 

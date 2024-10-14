@@ -15,10 +15,9 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
     
-    private List<Message> message = new ArrayList<>();
 
     public List<Message> getAllMessage(){
-        return messageRepository.findAll();
+        return (List<Message>) messageRepository.findAll();
     }
 
     public Message getMessageByID(int id){
@@ -29,8 +28,21 @@ public class MessageService {
         messageRepository.deleteById(id);
     }
 
-    public void updateMessage(int id){
+    public void updateMessage(int id, String updatedMessage){
         Message message = messageRepository.getById(id);
+        if(!(updatedMessage.isBlank()) || updatedMessage.length() <= 255){
+            message.setMessageText(updatedMessage);
+        }
+        messageRepository.save(message);
+
         
+    }
+
+    public void createMessage(Message message){
+        messageRepository.save(message);
+    } 
+
+    public List<Message> allMessageByAccount(int id){
+        return (List<Message>) messageRepository.findById(id).orElseThrow();
     }
 }
