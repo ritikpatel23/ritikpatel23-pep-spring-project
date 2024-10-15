@@ -1,5 +1,10 @@
 package com.example.controller;
 
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,15 +29,21 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("SocialMedia")
+@Configuration
 public class SocialMediaController {
 
+    
+    @Autowired
     private AccountService accountService;
+    @Autowired
     private MessageService messageService;
 
+    @Autowired
     public SocialMediaController(AccountService accountService){
         this.accountService = accountService;
     }
 
+    @Autowired
     public SocialMediaController(MessageService messageService){
         this.messageService = messageService;
     }

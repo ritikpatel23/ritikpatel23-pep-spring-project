@@ -7,8 +7,11 @@ import com.example.repository.AccountRepository;
 
 public class AccountService {
 
+    @Autowired
     private MessageService messageService;
+    @Autowired
     private AccountService accountService;
+    @Autowired
     private AccountRepository accountRepository;
 
     @Autowired

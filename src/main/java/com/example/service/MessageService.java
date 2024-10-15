@@ -9,13 +9,14 @@ import com.example.repository.MessageRepository;
 
 public class MessageService {
 
+    @Autowired
     private MessageRepository messageRepository;
+
     @Autowired
     public MessageService(MessageRepository messageRepository){
         this.messageRepository = messageRepository;
     }
     
-
     public List<Message> getAllMessage(){
         return (List<Message>) messageRepository.findAll();
     }
