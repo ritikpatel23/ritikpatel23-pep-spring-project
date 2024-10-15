@@ -34,7 +34,6 @@ import java.util.*;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 @Controller
-@RequestMapping("SocialMedia")
 @ComponentScan(basePackages = "com.revature.components")
 @Component
 public class SocialMediaController {
@@ -51,26 +50,41 @@ public class SocialMediaController {
     }
 
     //create message
-    @PostMapping("create")
+    @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message){
-        return ResponseEntity.status(HttpStatus.OK).body(messageService.createMessage(message));
+        Message createdMessage = messageService.createMessage(message);
+        if(createdMessage == null){
+            return (ResponseEntity<Message>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body(messageService.createMessage(message));
+        }
+        
     }
     
     
     // get all messages
-    @GetMapping
-    public List<Message> getAllMessages(){
-        return (List<Message>) ResponseEntity.status(200).body(messageService.getAllMessage());
+
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages(){
+        return ResponseEntity.status(200).body(messageService.getAllMessage());
     }
 
     // get message by id
-    @GetMapping(params = "id")
-    public ResponseEntity<Message> getMessageByID(@RequestParam int id){
-        return new ResponseEntity<>(messageService.getMessageByID(id), HttpStatus.OK);
+    @GetMapping("messages/{messageId}")
+    public ResponseEntity<Message> getMessageByID(@PathVariable int messageId){
+        Message message = messageService.getMessageByID(messageId);
+        if (message == null){
+            return (ResponseEntity<Message>) ResponseEntity.ok();
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        }
+        
     }
 
     // delete message by id
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("messages/{id}")
     public ResponseEntity<Integer> deleteMessage(@PathVariable int id){
        if(getMessageByID(id) == null){
         return  (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.OK);
@@ -83,27 +97,33 @@ public class SocialMediaController {
     }
 
     // update message text
-    @PatchMapping("update")
-    public ResponseEntity<Integer> updateMessage(@RequestParam int messageId, @RequestBody String messageText){
+    @PatchMapping("messages/{messageId}")
+    public ResponseEntity<Integer> updateMessage(@RequestParam int messageId, @RequestParam String messageText){
         messageService.updateMessage(messageId, messageText );
         return ResponseEntity.status(HttpStatus.OK).body(1);
     }
 
     // get all messages using accountId
-    @GetMapping(params = "accountId")
-    public ResponseEntity<List<Message>> getAllMessagesFromAccount(@RequestBody int accountId){
+    @GetMapping("messages/{accountId}")
+    public ResponseEntity<List<Message>> getAllMessagesFromAccount(@RequestParam int accountId){
         return ResponseEntity.status(HttpStatus.OK).body(messageService.allMessageByAccount(accountId));
     }
 
     // register account
-    @PostMapping("register")
+    @PostMapping("/register")
     public @ResponseBody ResponseEntity<Account> registerAccount(@RequestBody Account account){
-        accountService.register(account);
-        return ResponseEntity.status(HttpStatus.OK).body(account);
+        Account addedAccount = accountService.register(account);
+        if(addedAccount == null){
+            return (ResponseEntity<Account>) ResponseEntity.status(HttpStatus.CONFLICT);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body(account);
+        }
+        
     }
 
     // login
-    @PostMapping("login")
+    @PostMapping("/login")
     public @ResponseBody ResponseEntity<Account> loginAccount(@RequestBody Account account){
         accountService.login(account);
         return ResponseEntity.status(HttpStatus.OK).body(account);

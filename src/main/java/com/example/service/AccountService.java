@@ -19,9 +19,12 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public void register(Account account){
-        if(account.getPassword().length() < 4 || !(account.getUsername().isBlank())){
-        accountRepository.save(account);
+    public Account register(Account account){
+        if(account.getPassword().length() < 4 || (account.getUsername().isBlank()) || account == null){
+            return null;
+        }
+        else{
+            return accountRepository.save(account);
         }
     }
 

@@ -39,13 +39,20 @@ public class MessageService {
             message.setMessageText(updatedMessage);
         }
         messageRepository.save(message);
+        
 
         
     }
 
     public Message createMessage(Message message){
-        messageRepository.save(message);
-        return message;
+        if(message.getMessageText().isBlank() || message.getMessageText().length() > 255){
+            return null;
+        }
+        else{
+            messageRepository.save(message);
+            return message;
+        }
+        
     } 
 
     public List<Message> allMessageByAccount(int id){
