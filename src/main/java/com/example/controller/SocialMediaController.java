@@ -4,18 +4,24 @@ import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
@@ -29,37 +35,43 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("SocialMedia")
-@Configuration
+@ComponentScan(basePackages = "com.revature.components")
+@Component
 public class SocialMediaController {
 
     
-    @Autowired
+    
     private AccountService accountService;
-    @Autowired
     private MessageService messageService;
 
-    @Autowired
-    public SocialMediaController(AccountService accountService){
+    
+    public SocialMediaController(AccountService accountService, MessageService messageService){
         this.accountService = accountService;
-    }
-
-    @Autowired
-    public SocialMediaController(MessageService messageService){
         this.messageService = messageService;
     }
+
+    //create message
+    @PostMapping("create")
+    public ResponseEntity<Message> createMessage(@RequestBody Message message){
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.createMessage(message));
+    }
     
+    
+    // get all messages
     @GetMapping
-    public @ResponseBody List<Message> getAllMessages(){
+    public List<Message> getAllMessages(){
         return (List<Message>) ResponseEntity.status(200).body(messageService.getAllMessage());
     }
 
+    // get message by id
     @GetMapping(params = "id")
-    public @ResponseBody ResponseEntity<Message> getMessageByID(@RequestParam int id){
+    public ResponseEntity<Message> getMessageByID(@RequestParam int id){
         return new ResponseEntity<>(messageService.getMessageByID(id), HttpStatus.OK);
     }
 
+    // delete message by id
     @DeleteMapping("delete/{id}")
-    public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable int id){
+    public ResponseEntity<Integer> deleteMessage(@PathVariable int id){
        if(getMessageByID(id) == null){
         return  (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.OK);
        } 
@@ -68,6 +80,33 @@ public class SocialMediaController {
         return ResponseEntity.status(HttpStatus.OK).body(1);
        }
 
+    }
+
+    // update message text
+    @PatchMapping("update")
+    public ResponseEntity<Integer> updateMessage(@RequestParam int messageId, @RequestBody String messageText){
+        messageService.updateMessage(messageId, messageText );
+        return ResponseEntity.status(HttpStatus.OK).body(1);
+    }
+
+    // get all messages using accountId
+    @GetMapping(params = "accountId")
+    public ResponseEntity<List<Message>> getAllMessagesFromAccount(@RequestBody int accountId){
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.allMessageByAccount(accountId));
+    }
+
+    // register account
+    @PostMapping("register")
+    public @ResponseBody ResponseEntity<Account> registerAccount(@RequestBody Account account){
+        accountService.register(account);
+        return ResponseEntity.status(HttpStatus.OK).body(account);
+    }
+
+    // login
+    @PostMapping("login")
+    public @ResponseBody ResponseEntity<Account> loginAccount(@RequestBody Account account){
+        accountService.login(account);
+        return ResponseEntity.status(HttpStatus.OK).body(account);
     }
 
 

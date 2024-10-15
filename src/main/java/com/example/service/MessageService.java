@@ -3,10 +3,14 @@ package com.example.service;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.example.entity.Message;
 import com.example.repository.MessageRepository;
 
+@Component
+@Service
 public class MessageService {
 
     @Autowired
@@ -39,8 +43,9 @@ public class MessageService {
         
     }
 
-    public void createMessage(Message message){
+    public Message createMessage(Message message){
         messageRepository.save(message);
+        return message;
     } 
 
     public List<Message> allMessageByAccount(int id){
