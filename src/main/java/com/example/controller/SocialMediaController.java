@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
-import com.example.exception.ResouceNotFoundException;
+import com.example.exception.DuplicateUsernameException;
+
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 import java.util.*;
@@ -119,13 +120,16 @@ public class SocialMediaController {
     // register account
     @PostMapping("register")
     public @ResponseBody ResponseEntity<Account> registerAccount(@RequestBody Account account){
-        Account addedAccount = accountService.register(account);
-        if(addedAccount == null){
-            return (ResponseEntity<Account>) ResponseEntity.status(HttpStatus.CONFLICT);
+        try{
+            Account createdAccount = accountService.register(account);
+            return ResponseEntity.ok(createdAccount);
         }
-        else{
-            return ResponseEntity.status(HttpStatus.OK).body(account);
-        }
+            catch(DuplicateUsernameException e){
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+            catch(IllegalArgumentException e){
+                return ResponseEntity.badRequest().build();
+            }
         
     }
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
+import com.example.exception.DuplicateUsernameException;
 import com.example.repository.AccountRepository;
 
 @Component
@@ -21,11 +22,13 @@ public class AccountService {
 
     public Account register(Account account){
         if(account.getPassword().length() < 4 || (account.getUsername().isBlank()) || account == null){
-            return null;
+            throw new IllegalArgumentException();
         }
-        else{
+        if(accountRepository.findByUsername(account.getUsername()).isPresent()){
+            throw new DuplicateUsernameException("Username already exists");
+        }
             return accountRepository.save(account);
-        }
+        
     }
 
     public Account login(Account account){
