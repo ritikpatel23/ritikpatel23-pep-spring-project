@@ -31,9 +31,14 @@ public class AccountService {
         
     }
 
-    public Account login(Account account){
-        accountRepository.findByUsernameAndPassword(account.getUsername(), account.getPassword());
-        return (Account) accountRepository.findById(account.getAccountId()).orElseThrow();
+    public Account login(String username, String password){
+        Account account = accountRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException());
+
+        if(!account.getPassword().equals(password)){
+            throw new IllegalArgumentException();
+        }
+
+        return account;
     }
 
 

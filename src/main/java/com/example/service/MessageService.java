@@ -29,8 +29,8 @@ public class MessageService {
         return (List<Message>) messageRepository.findAll();
     }
 
-    public Message getMessageByID(int id){
-        return messageRepository.findById(id).orElseThrow();
+    public Optional<Message> getMessageByID(int id){
+        return messageRepository.findById(id);
     }
 
     public void deleteMessageById(int id){

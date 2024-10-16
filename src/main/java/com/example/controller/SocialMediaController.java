@@ -75,13 +75,8 @@ public class SocialMediaController {
     // get message by id
     @GetMapping("messages/{messageId}")
     public ResponseEntity<Message> getMessageByID(@PathVariable int messageId){
-        Message message = messageService.getMessageByID(messageId);
-        if (message == null){
-            return (ResponseEntity<Message>) ResponseEntity.ok();
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.OK).body(message);
-        }
+        Optional<Message> message = messageService.getMessageByID(messageId);
+        return ResponseEntity.ok(message.orElse(null));
         
     }
 
@@ -136,8 +131,13 @@ public class SocialMediaController {
     // login
     @PostMapping("login")
     public ResponseEntity<Account> loginAccount(@RequestBody Account account){
-        accountService.login(account);
-        return ResponseEntity.status(HttpStatus.OK).body(account);
+        try{
+            Account loginAccount = accountService.login(account.getUsername(), account.getPassword());
+            return ResponseEntity.ok(loginAccount);
+        }
+        catch(IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
 
