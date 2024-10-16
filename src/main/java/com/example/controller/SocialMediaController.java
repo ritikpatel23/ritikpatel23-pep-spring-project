@@ -97,14 +97,16 @@ public class SocialMediaController {
 
     // update message text
     @PatchMapping("messages/{messageId}")
-    public ResponseEntity<Integer> updateMessage(@RequestBody int messageId, @RequestBody String messageText){
-        if(messageText.length() > 255 || messageText.isBlank()){
-            return (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Integer> updateMessage(@PathVariable int messageId, @RequestBody Map<String, String> updatedText){
+        String updatedMessageText = updatedText.get("messageText");
+        try{
+            messageService.updateMessage(messageId, updatedMessageText);
+            return ResponseEntity.ok(1);
         }
-        else{
-            messageService.updateMessage(messageId, messageText );
-            return ResponseEntity.status(HttpStatus.OK).body(1);
+        catch(IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
         }
+        
         
     }
 

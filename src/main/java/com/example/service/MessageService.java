@@ -44,11 +44,20 @@ public class MessageService {
     }
 
     public void updateMessage(int id, String updatedMessage){
-        Message message = messageRepository.findById(id).orElseThrow();
-        if(!(updatedMessage.isBlank()) || updatedMessage.length() <= 255){
-            message.setMessageText(updatedMessage);
+        Optional<Message> message = messageRepository.findById(id);
+        if((updatedMessage.isBlank()) || updatedMessage.length() > 255 || updatedMessage == null){
+            throw new IllegalArgumentException();
         }
-        messageRepository.save(message);
+        if(message.isPresent()){
+            Message newMessage = message.get();
+            newMessage.setMessageText(updatedMessage);
+            messageRepository.save(newMessage);
+
+        }   
+        else{
+            throw new IllegalArgumentException();
+        }
+        
         
 
         
