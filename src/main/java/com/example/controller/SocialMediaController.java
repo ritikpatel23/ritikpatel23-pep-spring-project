@@ -86,7 +86,7 @@ public class SocialMediaController {
     // delete message by id
     @DeleteMapping("messages/{id}")
     public ResponseEntity<Integer> deleteMessage(@PathVariable int id){
-       if(getMessageByID(id) == null){
+       if(messageService.messageExists(id) == false){
         return  (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.OK);
        } 
        else{
@@ -104,8 +104,8 @@ public class SocialMediaController {
     }
 
     // get all messages using accountId
-    @GetMapping("messages/{accountId}")
-    public ResponseEntity<List<Message>> getAllMessagesFromAccount(@RequestParam int accountId){
+    @GetMapping("accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> getAllMessagesFromAccount(@PathVariable int accountId){
         return ResponseEntity.status(HttpStatus.OK).body(messageService.allMessageByAccount(accountId));
     }
 

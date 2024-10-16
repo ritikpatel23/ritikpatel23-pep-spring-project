@@ -34,7 +34,7 @@ public class MessageService {
     }
 
     public void updateMessage(int id, String updatedMessage){
-        Message message = messageRepository.getById(id);
+        Message message = messageRepository.findById(id).orElseThrow();
         if(!(updatedMessage.isBlank()) || updatedMessage.length() <= 255){
             message.setMessageText(updatedMessage);
         }
@@ -56,6 +56,10 @@ public class MessageService {
     } 
 
     public List<Message> allMessageByAccount(int id){
-        return (List<Message>) messageRepository.findById(id).orElseThrow();
+        return messageRepository.findByPostedBy(id);
+    }
+
+    public boolean messageExists(int id){
+        return messageRepository.existsById(id);
     }
 }
