@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.ResouceNotFoundException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 import java.util.*;
@@ -52,12 +53,12 @@ public class SocialMediaController {
     //create message
     @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message){
+        try{
         Message createdMessage = messageService.createMessage(message);
-        if(createdMessage == null){
-            return (ResponseEntity<Message>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.ok(createdMessage);
         }
-        else{
-            return ResponseEntity.status(HttpStatus.OK).body(messageService.createMessage(message));
+        catch(IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
         }
         
     }
@@ -98,9 +99,15 @@ public class SocialMediaController {
 
     // update message text
     @PatchMapping("messages/{messageId}")
-    public ResponseEntity<Integer> updateMessage(@RequestParam int messageId, @RequestParam String messageText){
-        messageService.updateMessage(messageId, messageText );
-        return ResponseEntity.status(HttpStatus.OK).body(1);
+    public ResponseEntity<Integer> updateMessage(@RequestBody int messageId, @RequestBody String messageText){
+        if(messageText.length() > 255 || messageText.isBlank()){
+            return (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
+        }
+        else{
+            messageService.updateMessage(messageId, messageText );
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }
+        
     }
 
     // get all messages using accountId
@@ -110,7 +117,7 @@ public class SocialMediaController {
     }
 
     // register account
-    @PostMapping("/register")
+    @PostMapping("register")
     public @ResponseBody ResponseEntity<Account> registerAccount(@RequestBody Account account){
         Account addedAccount = accountService.register(account);
         if(addedAccount == null){
@@ -123,8 +130,8 @@ public class SocialMediaController {
     }
 
     // login
-    @PostMapping("/login")
-    public @ResponseBody ResponseEntity<Account> loginAccount(@RequestBody Account account){
+    @PostMapping("login")
+    public ResponseEntity<Account> loginAccount(@RequestBody Account account){
         accountService.login(account);
         return ResponseEntity.status(HttpStatus.OK).body(account);
     }

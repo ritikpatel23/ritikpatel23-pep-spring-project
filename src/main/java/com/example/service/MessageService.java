@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
 @Component
@@ -15,10 +17,12 @@ public class MessageService {
 
     @Autowired
     private MessageRepository messageRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository){
+    public MessageService(MessageRepository messageRepository, AccountRepository accountRepository){
         this.messageRepository = messageRepository;
+        this.accountRepository = accountRepository;
     }
     
     public List<Message> getAllMessage(){
@@ -45,13 +49,14 @@ public class MessageService {
     }
 
     public Message createMessage(Message message){
-        if(message.getMessageText().isBlank() || message.getMessageText().length() > 255){
-            return null;
+        if(message.getMessageText().isBlank() || message.getMessageText().length() > 255 || message.getPostedBy() == null || message.getMessageText() == null){
+            throw new IllegalArgumentException();
         }
-        else{
+
+            Account account = accountRepository.findById(message.getPostedBy()).orElseThrow(() -> new IllegalArgumentException());
             messageRepository.save(message);
             return message;
-        }
+        
         
     } 
 
