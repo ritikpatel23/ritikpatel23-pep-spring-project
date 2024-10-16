@@ -34,7 +34,13 @@ public class MessageService {
     }
 
     public void deleteMessageById(int id){
-        messageRepository.deleteById(id);
+        if(messageExists(id)){
+            messageRepository.deleteById(id);
+        }
+        else{
+            throw new IllegalArgumentException();
+        }
+        
     }
 
     public void updateMessage(int id, String updatedMessage){

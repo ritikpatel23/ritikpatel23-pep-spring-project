@@ -83,15 +83,17 @@ public class SocialMediaController {
     // delete message by id
     @DeleteMapping("messages/{id}")
     public ResponseEntity<Integer> deleteMessage(@PathVariable int id){
-       if(messageService.messageExists(id) == false){
-        return  (ResponseEntity<Integer>) ResponseEntity.status(HttpStatus.OK);
-       } 
-       else{
-        messageService.deleteMessageById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(1);
+        try{
+            messageService.deleteMessageById(id);
+        return ResponseEntity.ok(1);
+        }
+        catch(IllegalArgumentException e){
+            return ResponseEntity.ok().build();
+        }
+        
        }
 
-    }
+    
 
     // update message text
     @PatchMapping("messages/{messageId}")
